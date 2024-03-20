@@ -1,4 +1,4 @@
-# 中文 | [English](https://github.com/Siriling/istoreos-actions/blob/main/EngLish.md)
+# 中文 | [English](https://github.com/Siriling/openwrt-app-actions/blob/main/EngLish.md)
 
 # 移动通信模组自动构建
 
