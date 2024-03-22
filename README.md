@@ -50,13 +50,13 @@ Modem插件自动构建
 ForkApp使用步骤
 
 ```shell
-./forkapp forkapp -from ../applications/luci-app-plex -to ../applications/luci-app-demo
+./forkapp forkapp -from ../applications/luci-app-modem -to ../applications/luci-app-demo
 ```
 
 ```shell
-./forkapp upload -ip 192.168.100.1 -pwd "password" -from ../applications/luci-app-demo -to /root/
+./forkapp upload -ip 192.168.100.1 -pwd "password" -from ../applications/luci-app-modem -to /root/
 ```
 
 ```shell
-./forkapp upload -ip 192.168.100.1 -pwd "password" -from ../applications/luci-app-demo -to /root/ -script ../tools/simple-install.sh -install
+./forkapp upload -ip 192.168.100.1 -pwd "password" -from ../applications/luci-app-modem -to /root/ -script ../tools/simple-install.sh -install
 ```
