@@ -342,6 +342,7 @@ BOOL qmidevice_detect(char *qmichannel, char *usbnet_adapter, unsigned bufsize, 
             if (profile->usb_dev.idVendor == 0x2c7c) { //Quectel
                 switch (profile->usb_dev.idProduct) { //EC200U
                 case 0x0901: //EC200U
+                case 0x0904: //EC200G
                 case 0x8101: //RG801H
                     atIntf = 2;
                 break;
@@ -352,6 +353,7 @@ BOOL qmidevice_detect(char *qmichannel, char *usbnet_adapter, unsigned bufsize, 
                 case 0x6005: //EC200A
                 case 0x6002: //EC200S
                 case 0x6001: //EC100Y
+                case 0x6007: //EG915Q-NA in ECM mode, it also could set atIntf to 4
                     atIntf = 3;
                 break;
                 default:
@@ -394,6 +396,21 @@ error:
     return FALSE;
 }
 
+
+
+void replaceStr(char *str, char *orig, char *rep) {
+    char buffer[1024];
+    char *p;
+    while (p = strstr(str, orig)) {
+        memcpy(buffer, str, p - str);
+        buffer[p - str] = '\0';
+        sprintf(buffer + strlen(buffer), "%s%s", rep, p + strlen(orig));
+        strcpy(str, buffer);
+    }
+}
+
+
+
 int mhidevice_detect(char *qmichannel, char *usbnet_adapter, PROFILE_T *profile) {
     struct dirent* ent = NULL;
     DIR *pDir;
@@ -419,19 +436,28 @@ int mhidevice_detect(char *qmichannel, char *usbnet_adapter, PROFILE_T *profile)
             char *pNode = NULL;
 
             pNode = strstr(ent->d_name, "_IP_HW0"); //0306_00.01.00_IP_HW0
-            if (!pNode)
+            if (!pNode){
                 continue;
+            }
+              
+              
+            char *d_name[32];
+            strcpy(d_name, ent->d_name);
+            replaceStr(d_name, "_IP_HW0", "");
+            dbg_time("while -> pcie_name = : %s ", d_name);
 
             snprintf(path, sizeof(path), "%s/%.32s/net", rootdir, ent->d_name);
             dir_get_child(path, netcard, sizeof(netcard), NULL);
-            if (!netcard[0])
+            if (!netcard[0]){
                 continue;
-
-            if (usbnet_adapter[0] && strcmp(netcard, usbnet_adapter)) //not '-i x'
+            }
+            
+            if (usbnet_adapter[0] && strcmp(netcard, usbnet_adapter)) {//not '-i x'
                 continue;
-
+	     }
             if (!strcmp(rootdir, "/sys/bus/mhi/devices")) {
-                snprintf(path, sizeof(path), "%s/%.13s_IPCR", rootdir, ent->d_name); // 13 is sizeof(0306_00.01.00)
+//                snprintf(path, sizeof(path), "%s/%.13s_IPCR", rootdir, ent->d_name); // 13 is sizeof(0306_00.01.00)
+                snprintf(path, sizeof(path), "%s/%s_IPCR", rootdir, d_name);
                 if (!access(path, F_OK)) {
                     /* we also need 'cat /dev/mhi_0306_00.01.00_pipe_14' to enable rmnet as like USB's DTR 
                          or will get error 'requestSetEthMode QMUXResult = 0x1, QMUXError = 0x46' */
@@ -443,16 +469,29 @@ int mhidevice_detect(char *qmichannel, char *usbnet_adapter, PROFILE_T *profile)
                 }
                 continue;
             }
-
-            snprintf(path, sizeof(path), "%s/%.13s_IPCR", rootdir, ent->d_name);
+            
+            
+            snprintf(path, sizeof(path), "%s/%s_IPCR", rootdir, d_name);
             if (access(path, F_OK)) {
-                snprintf(path, sizeof(path), "%s/%.13s_QMI0", rootdir, ent->d_name);
+                snprintf(path, sizeof(path), "%s/%s_QMI0", rootdir, d_name);
                 if (access(path, F_OK)) {
-                    snprintf(path, sizeof(path), "%s/%.13s_MBIM", rootdir, ent->d_name);
-                    if (!access(path, F_OK))
+                    snprintf(path, sizeof(path), "%s/%s_MBIM", rootdir, d_name);
+                    if (!access(path, F_OK)) {
                         software_interface = SOFTWARE_MBIM;
+                    }
                 }
             }
+
+//            snprintf(path, sizeof(path), "%s/%.13s_IPCR", rootdir, ent->d_name);
+//            if (access(path, F_OK)) {
+//                snprintf(path, sizeof(path), "%s/%.13s_QMI0", rootdir, ent->d_name);
+//                if (access(path, F_OK)) {
+//                    snprintf(path, sizeof(path), "%s/%.13s_MBIM", rootdir, ent->d_name);
+//                    if (!access(path, F_OK))
+//                        software_interface = SOFTWARE_MBIM;
+//                }
+//           }
+ 
             if (access(path, F_OK))
                 continue;
 
