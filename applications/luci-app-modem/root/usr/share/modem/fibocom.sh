@@ -56,6 +56,14 @@ fibocom_get_mode()
                 *) mode="$mode_num" ;;
             esac
         ;;
+        "mediatek")
+            case "$mode_num" in
+                "29") mode="mbim" ;;
+                "40") mode="rndis" ;; #-
+                "41") mode="rndis" ;;
+                *) mode="$mode_num" ;;
+            esac
+        ;;
         *)
             mode="$mode_num"
         ;;
@@ -102,6 +110,14 @@ fibocom_set_mode()
                 "rndis") mode_num="38" ;;
                 "ncm") mode_num="36" ;;
                 *) mode_num="34" ;;
+            esac
+        ;;
+        "mediatek")
+            case "$2" in
+                # "mbim") mode_num="40" ;;
+                # "rndis") mode_num="40" ;;
+                "rndis") mode_num="41" ;;
+                *) mode_num="41" ;;
             esac
         ;;
         *)
@@ -337,7 +353,7 @@ fibocom_sim_info()
 	iccid=$(sh $current_dir/modem_at.sh $at_port $at_command | grep -o "+ICCID:[ ]*[-0-9]\+" | grep -o "[-0-9]\{1,4\}")
 }
 
-#获取信号强度指示
+#获取信号强度指示（4G）
 # $1:信号强度指示数字
 fibocom_get_rssi()
 {
@@ -372,11 +388,11 @@ fibocom_network_info()
     at_command="AT+CSQ"
     response=$(sh $current_dir/modem_at.sh $at_port $at_command | grep "+CSQ:" | sed 's/+CSQ: //g' | sed 's/\r//g')
 
-    #RSSI（信号强度指示）
-    rssi_num=$(echo $response | awk -F',' '{print $1}')
-    rssi=$(fibocom_get_rssi $rssi_num)
-    #BER（信道误码率）
-    ber=$(echo $response | awk -F',' '{print $2}')
+    #RSSI（4G信号强度指示）
+    # rssi_num=$(echo $response | awk -F',' '{print $1}')
+    # rssi=$(fibocom_get_rssi $rssi_num)
+    #BER（4G信道误码率）
+    # ber=$(echo $response | awk -F',' '{print $2}')
 
     # #PER（信号强度）
     # if [ -n "$csq" ]; then
