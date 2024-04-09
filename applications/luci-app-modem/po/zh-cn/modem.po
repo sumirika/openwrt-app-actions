@@ -73,6 +73,9 @@ msgstr "选择一个模组进行调试"
 msgid "Network Preferences"
 msgstr "网络偏好"
 
+msgid "Self Test"
+msgstr "自检"
+
 msgid "Current"
 msgstr "当前"
 
@@ -81,6 +84,21 @@ msgstr "选项"
 
 msgid "Config"
 msgstr "配置"
+
+msgid "Item"
+msgstr "项目"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Abnormal"
+msgstr "异常"
+
+msgid "Normal"
+msgstr "正常"
+
+msgid "Low"
+msgstr "偏低"
 
 msgid "AT Command"
 msgstr "AT命令"
@@ -189,6 +207,12 @@ msgstr "模组管理工具"
 
 msgid "PDP Type"
 msgstr "网络类型"
+
+msgid "Network Bridge"
+msgstr "网络桥接"
+
+msgid "After checking, enable network interface bridge."
+msgstr "勾选后，启用网络接口桥接。"
 
 msgid "APN"
 msgstr "接入点"
