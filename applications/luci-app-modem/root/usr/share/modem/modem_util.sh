@@ -241,10 +241,14 @@ m_set_modem_hardware_config()
 	# 	fi
 	# }
 
-	#判断路径是否带有usb（排除其他eth网络设备）
-	if [ "$data_interface" != "pcie" ] && [[ "$device_physical_path" != *"usb"* ]]; then
-		return
-	fi
+	#是否是第一次添加（初始化模组）
+	local count=$(grep -o "processed" ${MODEM_PHYSICAL_DEVICE_CACHE} | wc -l)
+	[ "$count" -le "0" ] && {
+		sh "${SCRIPT_DIR}/modem_init.sh"
+	}
+
+	#设置物理路径状态
+	m_set_physical_path_status "${physical_path}" "processed"
 
 	#获取模组序号
 	local modem_no=$(uci -q get modem.@global[0].modem_number)
@@ -258,9 +262,6 @@ m_set_modem_hardware_config()
     uci set modem.modem${modem_no}.path="${physical_path}"
 
 	uci commit modem
-
-	#设置物理路径状态
-	m_set_physical_path_status "${physical_path}" "processed"
 }
 
 #删除模组配置
@@ -663,7 +664,7 @@ disable_dial()
 	done
 }
 
-#设置PCIE设备串口
+#设置模组串口
 # $1:物理路径
 m_set_modem_port()
 {
@@ -701,6 +702,8 @@ m_set_modem_port()
 	#不存在串口，返回
 	[ -z "${all_port}" ] && return
 
+	#删除原串口
+	uci -q del modem.modem${modem_no}.ports
 	#设置串口
 	local port_cache
 	for port_path in $all_port; do
@@ -710,7 +713,7 @@ m_set_modem_port()
 
 		#跳过重复的串口
 		[ "$port" = "$port_cache" ] && continue
-		#跳过重复的串口
+		#跳过多余串口（PCIE）
 		[[ "$port" = *"mhi_uci_q"* ]] && continue
 		[[ "$port" = *"mhi_cntrl_q"* ]] && continue
 
@@ -778,6 +781,11 @@ m_set_network_device()
 	#只处理最上级的网络设备
 	local count=$(echo "${network_path}" | grep -o "/net" | wc -l)
 	[ "$count" -ge "2" ] && return
+
+	#判断路径是否带有usb（排除其他eth网络设备）
+	if [[ "$network" = *"eth"* ]] && [[ "$network_path" != *"usb"* ]]; then
+		return
+	fi
 
 	#上报事件
     m_report_event "${action}" "net" "${network}" "${network_path}"
