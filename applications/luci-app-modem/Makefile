@@ -14,8 +14,6 @@ LUCI_DEPENDS:=+luci-compat \
 		+usbutils \
 		+pciutils \
 		+quectel-CM-5G \
-		+modemmanager \
-		+luci-proto-modemmanager \
 		+sms-tool \
 		+jq +grep\
 
