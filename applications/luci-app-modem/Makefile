@@ -10,11 +10,9 @@ PKG_VERSION:=1.2.0
 PKG_LICENSE:=GPLv3
 PKG_LINCESE_FILES:=LICENSE
 PKF_MAINTAINER:=siriling <siriling@qq.com>
-LUCI_DEPENDS:=+luci-compat +kmod-usb-net  +kmod-usb-net-cdc-ether \
-		+kmod-usb-net-qmi-wwan  +kmod-usb-net-rndis \
-		+kmod-usb-wdm \
-		+kmod-usb2 +kmod-usb3 \
+LUCI_DEPENDS:=+luci-compat \
 		+usbutils \
+		+pciutils \
 		+quectel-CM-5G \
 		+sms-tool \
 		+jq +grep\
