@@ -1,0 +1,36 @@
+<script type="text/javascript">//<![CDATA[
+	
+	XHR.poll(5, '<%=luci.dispatcher.build_url("admin", "network", "modem", "get_dial_log_info")%>', null,
+		function(x, data)
+		{
+			console.log(data);
+			
+		}
+	);
+//]]>
+</script>
+
+<style type="text/css">
+	/* AT命令响应 */
+	textarea {
+		background:#373737;
+		border:none;
+		color:#FFF;
+		width: 100%;
+	}
+</style>
+
+<!-- 默认隐藏模块状态 -->
+<fieldset id="modem_dial_log_field" class="cbi-section" style="display: block;">
+	<div class="cbi-section fade-in">
+		<!-- <legend><%:AT Command%></legend> -->
+		<h3 id="dial_log_title"><%:Dial Log%></h3>
+		<!-- <div id="response_label"><%:Response%></div><br/> -->
+		<div><textarea readonly="readonly" id="response" rows="20" maxlength="160"></textarea></div>
+		<div class="cbi-page-actions">
+			<input class="btn cbi-button cbi-button-link" type="button" value="<%:Return to old page%>" onclick="location.href='/cgi-bin/luci/admin/network/modem/at_command_old'">
+			<input class="btn cbi-button cbi-button-link" type="button" value="<%:Custom quick commands%>" onclick="location.href='/cgi-bin/luci/admin/network/modem/quick_commands_config'">
+			<input class="cbi-button cbi-button-reset" type="button" value="<%:Clean%>" onclick="clean_response()" alt="<%:Clean%>" title="<%:Clean%>">
+		</div>
+	</div>
+</fieldset>
