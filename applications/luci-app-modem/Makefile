@@ -6,12 +6,13 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=luci-app-modem
 LUCI_TITLE:=LuCI support for Modem
 LUCI_PKGARCH:=all
-PKG_VERSION:=1.2.0
+PKG_VERSION:=1.3.0
 PKG_LICENSE:=GPLv3
 PKG_LINCESE_FILES:=LICENSE
 PKF_MAINTAINER:=siriling <siriling@qq.com>
 LUCI_DEPENDS:=+luci-compat \
 		+usbutils \
+		+pciutils \
 		+quectel-CM-5G \
 		+sms-tool \
 		+jq +grep\
