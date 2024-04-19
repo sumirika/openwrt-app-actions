@@ -24,6 +24,7 @@ function index()
 	entry({"admin", "network", "modem", "config"}, cbi("modem/config")).leaf = true
 	entry({"admin", "network", "modem", "get_modems"}, call("getModems"), nil).leaf = true
 	entry({"admin", "network", "modem", "get_dial_log_info"}, call("getDialLogInfo"), nil).leaf = true
+	entry({"admin", "network", "modem", "clean_dial_log"}, call("cleanDialLog"), nil).leaf = true
 	entry({"admin", "network", "modem", "status"}, call("act_status")).leaf = true
 
 	--模块调试
@@ -365,10 +366,54 @@ function getDialLogInfo()
 	local command="find "..run_path.." -name \"modem*_dial.cache\""
 	local result=shell(command)
 
+	local log_paths=string.split(result, "\n")
+
+	local logs={}
+	for i = #log_paths, 1, -1 do --倒序遍历
+		
+		local log_path=log_paths[i]
+
+		if log_path ~= "" then
+			--获取模组
+			local tmp=string.gsub(log_path, run_path, "")
+			local modem=string.gsub(tmp, "_dial.cache", "")
+			
+			--获取日志内容
+			local command="cat "..log_path
+			log=shell(command)
+
+			--排序插入
+			modem_log={}
+			modem_log[modem]=log
+			table.insert(logs, modem_log)
+		end
+	end
+
 	-- 设置值
 	local data={}
-	data["dial_log_info"]=result
+	data["dial_log_info"]=logs
 	-- data["translation"]=translation
+
+	-- 写入Web界面
+	luci.http.prepare_content("application/json")
+	luci.http.write_json(data)
+end
+
+--[[
+@Description 清空拨号日志
+]]
+function cleanDialLog()
+	
+	-- 获取拨号日志路径
+    local dial_log_path = http.formvalue("path")
+
+	-- 清空拨号日志
+	local command=": > "..dial_log_path
+	shell(command)
+
+	-- 设置值
+	local data={}
+	data["clean_result"]="clean dial log"
 
 	-- 写入Web界面
 	luci.http.prepare_content("application/json")

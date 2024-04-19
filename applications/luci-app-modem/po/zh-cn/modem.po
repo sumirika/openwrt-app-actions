@@ -1,3 +1,6 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "Base Setting"
 msgstr "基本设置"
 
@@ -42,6 +45,9 @@ msgstr "在此页面给所有模组添加拨号配置"
 
 msgid "Global Config"
 msgstr "全局配置"
+
+msgid "Dial Log"
+msgstr "拨号日志"
 
 msgid "connect"
 msgstr "已连接"
