@@ -21,13 +21,6 @@ define Package/luci-app-modem/conffiles
 /etc/config/modem
 endef
 
-define Package/$(PKG_NAME)/config
-# shown in make menuconfig <Help>
-help
-	$(LUCI_TITLE)
-	Version: $(PKG_VERSION)
-endef
-
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
