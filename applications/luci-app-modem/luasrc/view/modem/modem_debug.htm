@@ -15,7 +15,7 @@
 			get_modem_debug_info(debug_params);
 		});
 
-		//获取标签菜单
+		//获取tab菜单
 		var tab_menu = document.getElementsByClassName('cbi-tabmenu')[0];
 		set_tab_event(tab_menu);
 
@@ -69,7 +69,7 @@
 		});
 	}
 
-	//设置标签菜单事件
+	//设置tab菜单事件
 	function set_tab_event(parent_element)
 	{
 		//获取子元素
@@ -78,7 +78,7 @@
 		for (var i = 0; i < childElements.length; i++)
 		{
 			// childElements[i].addEventListener('click', function(event) {
-			// 	var debug_params={first_cache:true};
+			//  	var debug_params={first_cache:true};
 			// 	get_modem_debug_info(debug_params);
 			// });
 
@@ -123,8 +123,7 @@
 			function(x, data)
 			{
 				responseElement=document.getElementById("response");
-				if ("response" in data)
-				{
+				if ("response" in data) {
 					//显示当前时间
 					responseElement.value+=data["time"]+" ";
 					//显示返回值
@@ -234,7 +233,7 @@
 		return disenable_element;
 	}
 
-	// 设置标签显示
+	// 设置tab显示
 	function set_tab_view(disenable_element,enable_element)
 	{
 		//获取tab内容父元素
@@ -283,6 +282,17 @@
 		document.getElementById("tab_context").style.display="none";
 	}
 
+	// 有模组界面
+	function modems_view()
+	{
+		//显示模组选择界面
+		document.getElementById("cbi-modem").style.display="block";
+		//显示AT命令标题
+		document.getElementById("at_command_title").style.display="block";
+		//隐藏提示信息
+		// document.getElementById("cbi-info").style.display="none";
+	}
+
 	// 未适配模组界面
 	function not_adapted_modems_view()
 	{
@@ -290,30 +300,26 @@
 		document.getElementById("info_message").innerHTML="<strong><%:Not adapted to this modem%></strong>";
 		//显示提示信息
 		document.getElementById("cbi-info").style.display="block";
-		//显示模组选择界面
-		document.getElementById("cbi-modem").style.display="block";
-		//显示标签内容界面
+		//显示tab内容界面
 		document.getElementById("tab_context").style.display="block";
 		//显示AT命令标题
 		document.getElementById("at_command_title").style.display="block";
-		//隐藏标签菜单界面
+		//隐藏tab菜单界面
 		document.getElementsByClassName("cbi-tabmenu")[0].style.display="none";
-		//在标签菜单选中AT命令
+		//在tab菜单选中AT命令
 		var data_tab="at_command_tab"
 		var at_command_tab_element = document.querySelector('li[data-tab="'+data_tab+'"]');
 		tab_event(at_command_tab_element);
+		//隐藏tab内容界面
+		// document.getElementById("tab_context").style.display="none";
 	}
 
 	// 全功能界面
 	function all_function_view()
 	{
-		//更新提示信息
-		document.getElementById("info_message").innerHTML='<img src="<%=resource%>/icons/loading.gif" alt="<%:Loading%>" style="vertical-align:middle"/><%:Loading modem%>...';
-		//显示模组选择界面
-		document.getElementById("cbi-modem").style.display="block";
-		//显示标签菜单界面
+		//显示tab菜单界面
 		document.getElementsByClassName("cbi-tabmenu")[0].style.display="block";
-		//显示标签内容界面
+		//显示tab内容界面
 		document.getElementById("tab_context").style.display="block";
 		//隐藏AT命令标题
 		document.getElementById("at_command_title").style.display="none";
@@ -384,6 +390,9 @@
 				var command_select = document.getElementById('command_select');
 				//更新选项
 				update_option(command_select,data["quick_commands"],true);
+
+				//显示有模组界面
+				modems_view();
 			}
 		);
 	}
@@ -724,6 +733,8 @@
 					var mode_info=data["mode_info"];
 					if (Object.keys(mode_info).length==0)
 					{
+						//显示未适配模组界面
+						not_adapted_modems_view();
 						return false
 					}
 
@@ -732,6 +743,9 @@
 
 					//设置第一次获取数据标志
 					debug_params.first_cache=false;
+
+					//显示全功能界面
+					all_function_view();
 				}
 			);
 		}
@@ -743,6 +757,8 @@
 					var network_prefer_info=data["network_prefer_info"];
 					if (Object.keys(network_prefer_info).length==0)
 					{
+						//显示未适配模组界面
+						not_adapted_modems_view();
 						return false
 					}
 
@@ -751,6 +767,9 @@
 
 					//设置第一次获取数据标志
 					debug_params.first_cache=false;
+
+					//显示全功能界面
+					all_function_view();
 				}
 			);
 		}
@@ -762,6 +781,8 @@
 					var self_test_info=data["self_test_info"];
 					if (Object.keys(self_test_info).length==0)
 					{
+						//显示未适配模组界面
+						not_adapted_modems_view();
 						return false
 					}
 
@@ -770,9 +791,43 @@
 
 					//设置第一次获取数据标志
 					// debug_params.first_cache=false;
+
+					//显示全功能界面
+					all_function_view();
 				}
 			);
 		}
+
+		//获取调试信息
+		// XHR.get('<%=luci.dispatcher.build_url("admin", "network", "modem", "get_modem_debug_info")%>', {"port":at_port},
+		// 	function(x, data)
+		// 	{
+		// 		var mode_info=data["mode_info"];
+		// 		var network_prefer_info=data["network_prefer_info"];
+		// 		var self_test_info=data["self_test_info"];
+		// 		if (Object.keys(mode_info).length==0||Object.keys(network_prefer_info).length==0) {
+		// 			//显示未适配模组界面
+		// 			not_adapted_modems_view();
+		// 			return false
+		// 		}
+
+		// 		//设置模式信息
+		// 		set_mode_info(mode_info,debug_params.first_cache);
+
+		// 		//设置网络偏好信息
+		// 		set_network_prefer_info(network_prefer_info,debug_params.first_cache);
+
+		// 		//设置模组自检信息
+		// 		set_modem_self_test_info(self_test_info);
+
+		// 		//设置第一次获取数据标志
+		// 		debug_params.first_cache=false;
+
+		// 		//显示全功能界面
+		// 		all_function_view();
+		// 	}
+		// );
+
 	}
 
 	// 定时触发更新AT串口
@@ -781,7 +836,7 @@
 		{
 			//缓存当前选择的模组
 			var modem_select_cache="";
-			var debug_params={first_cache:true,view:0};
+			var debug_params={first_cache:true};
 			return function(x, data)
 			{
 				var at_ports=data["at_ports"];
@@ -793,7 +848,8 @@
 				//获取快捷命令
 				if (Object.keys(at_ports).length==0)
 				{
-					debug_params.view=0;
+					//显示无模组界面
+					no_modems_view();
 				}
 				else
 				{
@@ -801,15 +857,6 @@
 					var modem_select_element = document.getElementById('modem_select');
 					var select_modem_name = modem_select_element.options[modem_select_element.selectedIndex].text;
 					
-					if (select_modem_name.includes("ttyUSB")||select_modem_name.includes("at")||select_modem_name.includes("DUN"))
-					{
-						debug_params.view=2;
-					}
-					else
-					{
-						debug_params.view=1;
-					}
-
 					if (select_modem_name != modem_select_cache)
 					{
 						//获取快捷选项
@@ -817,7 +864,6 @@
 						if (quick_option=="auto") {
 							get_quick_commands();
 						}
-						//缓存当前选中的模组
 						modem_select_cache=select_modem_name;
 
 						//设置第一次获取数据标志
@@ -826,20 +872,6 @@
 
 					//获取模组调试信息
 					get_modem_debug_info(debug_params);
-				}
-
-				//设置界面
-				if (debug_params.view==0) {
-					//显示无模组界面
-					no_modems_view();
-				}
-				else if (debug_params.view==1) {
-					//显示全功能界面
-					all_function_view();
-				}
-				else if (debug_params.view==2) {
-					//显示未适配模组界面
-					not_adapted_modems_view();
 				}
 			};
 		})()
@@ -881,7 +913,7 @@
 			display: none;
 		}
 
-		/* AT命令响应 */
+		/* 终端 */
 		textarea {
 			background:#373737;
 			border:none;
@@ -1118,8 +1150,8 @@
 							<div id="response_label"><%:Response%></div><br/>
 							<div><textarea readonly="readonly" id="response" rows="20" maxlength="160"></textarea></div>
 							<div class="cbi-page-actions">
-								<input class="btn cbi-button cbi-button-link" type="button" value="<%:Return to old page%>" onclick="location.href='/cgi-bin/luci/admin/network/modem/at_command_old'" alt="<%:Return to old page%>" title="<%:Return to old page%>">
-								<input class="btn cbi-button cbi-button-link" type="button" value="<%:Custom quick commands%>" onclick="location.href='/cgi-bin/luci/admin/network/modem/quick_commands_config'" alt="<%:Custom quick commands%>" title="<%:Custom quick commands%>">
+								<input class="btn cbi-button cbi-button-link" type="button" value="<%:Return to old page%>" onclick="location.href='/cgi-bin/luci/admin/network/modem/at_command_old'">
+								<input class="btn cbi-button cbi-button-link" type="button" value="<%:Custom quick commands%>" onclick="location.href='/cgi-bin/luci/admin/network/modem/quick_commands_config'">
 								<input class="cbi-button cbi-button-reset" type="button" value="<%:Clean%>" onclick="clean_response()" alt="<%:Clean%>" title="<%:Clean%>">
 							</div>
 						</td>
