@@ -547,41 +547,52 @@ stop_dial()
 	if [ -f "${MODEM_RUN_CONFIG}" ] && grep -q "${network}" "${MODEM_RUN_CONFIG}"; then
 		#该配置ID在运行，需要删除记录
 		sed -i "/${id}/d" "${MODEM_RUN_CONFIG}"
-	else
-		return 0
-	fi
 
-	#获取模块序号
-	get_modem_no "${network}"
+		#获取模块序号
+		get_modem_no "${network}"
 
-	#获取模组的拨号模式
-	[ -z "${modem_no}" ] && return 0
-	local mode=$(get_mode ${modem_no})
-	[ -z "$mode" ] || [ "$mode" = "unknown" ] && return
+		#获取模组的拨号模式
+		[ -z "${modem_no}" ] && return 0
+		local mode=$(get_mode ${modem_no})
+		[ -z "$mode" ] || [ "$mode" = "unknown" ] && return
 
-	#根据不同的拨号模式停止拨号
-	if [ "$mode" = "qmi" ]; then
-		stop_qmi
-	elif [ "$mode" = "gobinet" ]; then
-		stop_gobinet
-	elif [ "$mode" = "ecm" ]; then
-		stop_ecm
-	elif [ "$mode" = "mbim" ]; then
-		stop_mbim
-	elif [ "$mode" = "rndis" ]; then
-		stop_rndis
-	elif [ "$mode" = "ncm" ]; then
-		stop_ncm
+		#根据不同的拨号模式停止拨号
+		if [ "$mode" = "qmi" ]; then
+			stop_qmi
+		elif [ "$mode" = "gobinet" ]; then
+			stop_gobinet
+		elif [ "$mode" = "ecm" ]; then
+			stop_ecm
+		elif [ "$mode" = "mbim" ]; then
+			stop_mbim
+		elif [ "$mode" = "rndis" ]; then
+			stop_rndis
+		elif [ "$mode" = "ncm" ]; then
+			stop_ncm
+		fi
+
 	fi
 }
 
 dial()
 {
-	local enable #启用
-	local id #ID
+	local enable 	#启用
+	local id 		#ID
+	local delete 	#删除
 
 	config_get enable $1 enable
 	config_get id $1 id
+	config_get delete $1 delete
+
+	#删除拨号配置
+	[ "$delete" = "1" ] && {
+		stop_dial "$id"
+		uci -q del modem.${id}
+		uci commit modem
+		return 0
+	}
+
+	#停止拨号配置
 	[ "$enable" = "0" ] && {
 		stop_dial "$id"
 		return 0
@@ -676,14 +687,14 @@ manual_set_modem_config()
 	#获取网络设备路径
 	local network_path="$(readlink -f /sys/class/net/${network})"
 
-    #只处理最上级的网络设备
-    local count=$(echo "${network_path}" | grep -o "/net" | wc -l)
-    [ "$count" -ge "2" ] && return
+	#只处理最上级的网络设备
+	local count=$(echo "${network_path}" | grep -o "/net" | wc -l)
+	[ "$count" -ge "2" ] && return
 
     #判断路径是否带有usb（排除其他eth网络设备）
-    if [[ "$network" = *"eth"* ]] && [[ "$network_path" != *"usb"* ]]; then
-        return
-    fi
+	if [[ "$network" = *"eth"* ]] && [[ "$network_path" != *"usb"* ]]; then
+		return
+	fi
 
 	#获取物理路径
 	local physical_path=$(m_get_device_physical_path ${network_path})

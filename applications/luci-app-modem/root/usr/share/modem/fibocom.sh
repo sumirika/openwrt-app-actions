@@ -609,6 +609,34 @@ fibocom_get_nr_dl_bandwidth()
     echo "$nr_dl_bandwidth"
 }
 
+#获取信噪比
+# $1:网络类型
+# $2:信噪比数字
+fibocom_get_sinr_num()
+{
+    local sinr
+    case $1 in
+        "LTE") sinr=$(awk "BEGIN{ printf \"%.2f\", $2 * 0.5 - 23.5 }" | sed 's/\.*0*$//') ;;
+        "NR") sinr=$(awk "BEGIN{ printf \"%.2f\", $2 * 0.5 - 23.5 }" | sed 's/\.*0*$//') ;;
+	esac
+    echo "$sinr"
+}
+
+#获取接收信号功率
+# $1:网络类型
+# $2:接收信号功率数字
+fibocom_get_rxlev()
+{
+    local rxlev
+    case $1 in
+        "GSM") rxlev=$(($2-110)) ;;
+        "WCDMA") rxlev=$(($2-121)) ;;
+        "LTE") rxlev=$(($2-141)) ;;
+        "NR") rxlev=$(($2-157)) ;;
+	esac
+    echo "$rxlev"
+}
+
 #获取参考信号接收功率
 # $1:网络类型
 # $2:参考信号接收功率数字
@@ -642,20 +670,6 @@ fibocom_get_rssnr()
     #去掉小数点后的0
     local rssnr=$(awk "BEGIN{ printf \"%.2f\", $1 / 2 }" | sed 's/\.*0*$//')
     echo "$rssnr"
-}
-
-#获取接收信号功率
-# $1:网络类型
-# $2:接收信号功率数字
-fibocom_get_rxlev()
-{
-    local rxlev
-    case $1 in
-        "WCDMA") rxlev=$(($2-121)) ;;
-        "LTE") rxlev=$(($2-141)) ;;
-        "NR") rxlev=$(($2-157)) ;;
-	esac
-    echo "$rxlev"
 }
 
 #获取Ec/Io
@@ -699,7 +713,8 @@ fibocom_cell_info()
             nr_band=$(fibocom_get_band "NR" ${nr_band_num})
             nr_dl_bandwidth_num=$(echo "$response" | awk -F',' '{print $10}')
             nr_dl_bandwidth=$(fibocom_get_nr_dl_bandwidth ${nr_dl_bandwidth_num})
-            nr_sinr=$(echo "$response" | awk -F',' '{print $11}')
+            nr_sinr_num=$(echo "$response" | awk -F',' '{print $11}')
+            nr_sinr=$(fibocom_get_sinr_num "NR" ${nr_sinr_num})
             nr_rxlev_num=$(echo "$response" | awk -F',' '{print $12}')
             nr_rxlev=$(fibocom_get_rxlev "NR" ${nr_rxlev_num})
             nr_rsrp_num=$(echo "$response" | awk -F',' '{print $13}')
@@ -740,7 +755,8 @@ fibocom_cell_info()
             endc_nr_band=$(fibocom_get_band "NR" ${endc_nr_band_num})
             nr_dl_bandwidth_num=$(echo "$response" | awk -F',' '{print $10}')
             endc_nr_dl_bandwidth=$(fibocom_get_nr_dl_bandwidth ${nr_dl_bandwidth_num})
-            endc_nr_sinr=$(echo "$response" | awk -F',' '{print $11}')
+            endc_nr_sinr_num=$(echo "$response" | awk -F',' '{print $11}')
+            endc_nr_sinr=$(fibocom_get_sinr_num "NR" ${endc_nr_sinr_num})
             endc_nr_rxlev_num=$(echo "$response" | awk -F',' '{print $12}')
             endc_nr_rxlev=$(fibocom_get_rxlev "NR" ${endc_nr_rxlev_num})
             endc_nr_rsrp_num=$(echo "$response" | awk -F',' '{print $13}')
