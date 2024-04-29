@@ -105,7 +105,7 @@
                 "define_connect":"1",
                 "modes":["qmi","gobinet","ecm","mbim","rndis","ncm"]
             },
-            "SRM815":{
+            "srm815":{
                 "manufacturer_id":"2dee",
                 "manufacturer":"meig",
                 "platform":"qualcomm",
@@ -113,7 +113,7 @@
                 "define_connect":"1",
                 "modes":["qmi","gobinet","ecm","mbim","rndis"]
             },
-            "SRM825":{
+            "srm825":{
                 "manufacturer_id":"2dee",
                 "manufacturer":"meig",
                 "platform":"qualcomm",
@@ -123,6 +123,13 @@
             }
         },
         "pcie":{
+            "rm500q-cn":{
+                "manufacturer":"quectel",
+                "platform":"qualcomm",
+                "data_interface":"pcie",
+                "define_connect":"1",
+                "modes":["qmi","gobinet","mbim"]
+            },
             "rm500q-gl":{
                 "manufacturer":"quectel",
                 "platform":"qualcomm",
@@ -130,8 +137,22 @@
                 "define_connect":"1",
                 "modes":["qmi","gobinet","mbim"]
             },
+            "rg500q-ea":{
+                "manufacturer":"quectel",
+                "platform":"qualcomm",
+                "data_interface":"pcie",
+                "define_connect":"1",
+                "modes":["qmi","gobinet","mbim"]
+            },
             "rm502q-gl":{
-                "manufacturer":"fibocom",
+                "manufacturer":"quectel",
+                "platform":"qualcomm",
+                "data_interface":"pcie",
+                "define_connect":"1",
+                "modes":["qmi","gobinet","mbim"]
+            },
+            "rg520n-eu":{
+                "manufacturer":"quectel",
                 "platform":"qualcomm",
                 "data_interface":"pcie",
                 "define_connect":"1",
