@@ -197,29 +197,9 @@ set_interface()
 	esac
 }
 
-#设置移远模组MAC地址
-set_quectel_mac()
-{
-	local mac_address=$(cat /sys/class/net/${network}/address)
-	local null_mac="00:00:00:00:00:00"
-	[ -z "$mac_address" ] || [ "$mac_address" = "$null_mac" ] && {
-		#方法一（lua）
-		# local mac_address=$(lua -e 'math.randomseed(os.time()); for i=1,6 do io.write(string.format("%02X", math.random(0, 255))); if i < 6 then io.write(":") end; end')
-		#方法二（shell）
-		mac_address=$(generate_mac_address)
-		ifconfig ${network} hw ether "${mac_address}"
-	}
-}
-
 #移远拨号工具
 quectel_cm()
 {
-
-	#获取制造商
-	local manufacturer=$(uci -q get modem.modem${modem_no}.manufacturer)
-	#对移远500系列模组特殊处理（解决6.x内核下缺失Mac地址导致拨号异常问题）
-	[ "$manufacturer" = "quectel" ] && set_quectel_mac
-	
 	#拨号
 	procd_open_instance
 	procd_set_param command "quectel-CM"

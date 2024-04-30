@@ -10,10 +10,7 @@ PKG_VERSION:=1.4.3
 PKG_LICENSE:=GPLv3
 PKG_LINCESE_FILES:=LICENSE
 PKF_MAINTAINER:=siriling <siriling@qq.com>
-LUCI_DEPENDS:=+luci-compat \
-		+usbutils \
-		+pciutils \
-		+quectel-CM-5G \
+LUCI_DEPENDS:= \
 		+sms-tool \
 		+jq \
 
