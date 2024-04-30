@@ -24,6 +24,23 @@ m_log()
 	logger -p "daemon.${level}" -t "Modem[$$]" "hotplug: $*"
 }
 
+#生成16进制数
+generate_hex() {
+	echo "$(openssl rand -hex 1)"
+}
+
+#生成随机MAC地址
+generate_mac_address() {
+	local mac=""
+	for i in $(seq 1 6); do
+	  	mac="${mac}$(generate_hex)"
+		if [[ $i != 6 ]]; then
+			mac="${mac}:"
+		fi
+	done
+	echo "$mac"
+}
+
 #上报USB事件
 # $1:事件行为（add，remove，bind）
 # $2:类型
@@ -345,6 +362,11 @@ handle_special_modem_name()
 	#FM350-GL-00 5G Module
 	[[ "$modem_name" = *"fm350-gl"* ]] && {
 		modem_name="fm350-gl"
+	}
+
+	#RM500U-CNV
+	[[ "$modem_name" = *"rm500u-cn"* ]] && {
+		modem_name="rm500u-cn"
 	}
 
 	echo "$modem_name"
