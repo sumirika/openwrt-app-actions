@@ -21,7 +21,6 @@ LUCI_DEPENDS:=+luci-compat \
 		+kmod-usb-net-rndis \
 		+kmod-usb-net-cdc-ncm +kmod-usb-net-huawei-cdc-ncm \
 		+usbutils \
-		+kmod-pcie_mhi \
 		+pciutils \
 		+quectel-CM-5G \
 		+modemmanager \
