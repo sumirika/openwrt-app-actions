@@ -12,8 +12,6 @@ PKG_LINCESE_FILES:=LICENSE
 PKF_MAINTAINER:=Siriling <siriling@qq.com>
 LUCI_DEPENDS:=+luci-compat \
 		+usbutils \
-		+pciutils \
-		+quectel-CM-5G \
 		+sms-tool \
 		+bc +jq
 
