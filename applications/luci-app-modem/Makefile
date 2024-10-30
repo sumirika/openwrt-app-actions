@@ -13,7 +13,7 @@ PKF_MAINTAINER:=Siriling <siriling@qq.com>
 LUCI_DEPENDS:=+luci-compat \
 		+usbutils \
 		+sms-tool \
-		+bc +jq
+		+jq
 
 define Package/luci-app-modem/conffiles
 /etc/config/modem
