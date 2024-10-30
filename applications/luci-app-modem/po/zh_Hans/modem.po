@@ -247,7 +247,7 @@ msgstr "切换拨号工具后，可能需要重启模组或重启路由器才能
 msgid "Auto Choose"
 msgstr "自动选择"
 
-msgid "quectel-CM"
+msgid "quectel-cm"
 msgstr "移远模组拨号工具"
 
 msgid "mmcli"
