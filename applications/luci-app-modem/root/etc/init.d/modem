@@ -226,7 +226,7 @@ quectel_cm()
 	
 	#拨号
 	procd_open_instance
-	procd_set_param command "quectel-cm"
+	procd_set_param command "quectel-CM"
 
 	case $pdp_type in
 		"ipv4") procd_append_param command "-4" ;;
@@ -320,7 +320,7 @@ qmi()
 {
 	#选择拨号工具
 	case $dial_tool in
-		"quectel-cm") quectel_cm ;;
+		"quectel-CM") quectel_cm ;;
 		"mmcli") modemmanager ;;
 		"") quectel_cm ;;
 		*) quectel_cm ;;
@@ -825,7 +825,7 @@ stop_service()
 	#删除记录文件
 	rm -rf ${MODEM_RUN_CONFIG}
 	#停止qmi、mbim拨号
-	killall quectel-cm >/dev/null 2>&1
+	killall quectel-CM >/dev/null 2>&1
 	#停止gobinet、ecm、rndis、ncm拨号
 	local modem_number=$(uci -q get modem.@global[0].modem_number)
 	for i in $(seq 0 $((modem_number-1))); do
