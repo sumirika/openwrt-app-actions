@@ -5,7 +5,7 @@
 SCRIPT_DIR="/usr/share/modem"
 
 #预设
-huawei_presets()
+tdtech_presets()
 {
     #关闭模组主动上报
 	at_command='AT^CURC=0'
@@ -19,7 +19,7 @@ huawei_presets()
 #获取DNS
 # $1:AT串口
 # $2:连接定义
-huawei_get_dns()
+tdtech_get_dns()
 {
     local at_port="$1"
     local define_connect="$2"
@@ -92,13 +92,13 @@ huawei_get_dns()
 #获取拨号模式
 # $1:AT串口
 # $2:平台
-huawei_get_mode()
+tdtech_get_mode()
 {
     local at_port="$1"
     local platform="$2"
 
     at_command="AT^SETMODE?"
-    local mode_num=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "\^SETMODE:" | awk -F': ' '{print $2}' | sed 's/\r//g')
+    local mode_num=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | sed -n '2p' | sed 's/\r//g')
 
     if [ -z "$mode_num" ]; then
         echo "unknown"
@@ -139,7 +139,7 @@ huawei_get_mode()
 #设置拨号模式
 # $1:AT串口
 # $2:拨号模式配置
-huawei_set_mode()
+tdtech_set_mode()
 {
     local at_port="$1"
     local mode_config="$2"
@@ -177,7 +177,7 @@ huawei_set_mode()
 
 #获取位
 # $1:频段名称
-huawei_get_bit()
+tdtech_get_bit()
 {
     local band_name="$1"
 
@@ -201,7 +201,7 @@ huawei_get_bit()
 # $1:频段二进制数
 # $2:支持的频段
 # $3:频段类型（2G，3G，4G，5G）
-huawei_get_band_info()
+tdtech_get_band_info()
 {
     local band_bin="$1"
     local support_band="$2"
@@ -213,7 +213,7 @@ huawei_get_band_info()
 
         for band in $support_band; do
             #获取bit位
-            local bit=$(huawei_get_bit ${band})
+            local bit=$(tdtech_get_bit ${band})
             #获取值
             local enable="${band_bin: $((-bit)):1}"
             [ -z "$enable" ] && enable="0"
@@ -260,7 +260,7 @@ huawei_get_band_info()
 # $1:AT串口
 # $2:数据接口
 # $3:模组名称
-huawei_get_network_prefer()
+tdtech_get_network_prefer()
 {
     local at_port="$1"
     local data_interface="$2"
@@ -315,14 +315,14 @@ huawei_get_network_prefer()
     local band_hex_2g_3g=$(echo "$response" | awk -F',' '{print $2}')
     #十六进制转二进制
     local bin_2g_3g=$(echo "obase=2; ibase=16; $band_hex_2g_3g" | bc)
-    local band_2g_info=$(huawei_get_band_info "${bin_2g_3g}" "${support_2g_band}" "2G")
-    local band_3g_info=$(huawei_get_band_info "${bin_2g_3g}" "${support_3g_band}" "3G")
+    local band_2g_info=$(tdtech_get_band_info "${bin_2g_3g}" "${support_2g_band}" "2G")
+    local band_3g_info=$(tdtech_get_band_info "${bin_2g_3g}" "${support_3g_band}" "3G")
 
     local band_hex_4g_5g=$(echo "$response" | awk -F',' '{print $5}' | sed 's/\r//g')
     #十六进制转二进制
     local bin_4g_5g=$(echo "obase=2; ibase=16; $band_hex_4g_5g" | bc)
-    local band_4g_info=$(huawei_get_band_info "${bin_4g_5g}" "${support_4g_band}" "4G")
-    local band_5g_info=$(huawei_get_band_info "${bin_4g_5g}" "${support_5g_band}" "5G")
+    local band_4g_info=$(tdtech_get_band_info "${bin_4g_5g}" "${support_4g_band}" "4G")
+    local band_5g_info=$(tdtech_get_band_info "${bin_4g_5g}" "${support_5g_band}" "5G")
 
     #生成网络偏好
     local network_prefer="{
@@ -351,7 +351,7 @@ huawei_get_network_prefer()
 #设置网络偏好
 # $1:AT串口
 # $2:网络偏好配置
-huawei_set_network_prefer()
+tdtech_set_network_prefer()
 {
     local at_port="$1"
     local network_prefer="$2"
@@ -379,7 +379,7 @@ huawei_set_network_prefer()
 #设置频段
 # $1:AT串口
 # $2:频段偏好配置
-huawei_set_band_prefer()
+tdtech_set_band_prefer()
 {
     local at_port="$1"
     local network_prefer="$2"
@@ -475,7 +475,7 @@ huawei_set_band_prefer()
             local value=$(echo "$network_prefer_2g" | jq -r '.band'"[$i].$band")
             [ "$value" = "1" ] && {
                 #获取bit位
-                local bit=$(huawei_get_bit ${band})
+                local bit=$(tdtech_get_bit ${band})
                 #获取值
                 local result=$(echo "obase=16; ibase=10; 2^($bit-1)" | bc)
                 band_hex_2g_3g=$(echo "obase=16; ibase=16; $band_hex_2g_3g + $result" | bc)
@@ -493,7 +493,7 @@ huawei_set_band_prefer()
 
 #获取电压
 # $1:AT串口
-huawei_get_voltage()
+tdtech_get_voltage()
 {
     local at_port="$1"
     
@@ -506,7 +506,7 @@ huawei_get_voltage()
 
 #获取温度
 # $1:AT串口
-huawei_get_temperature()
+tdtech_get_temperature()
 {
     local at_port="$1"
     
@@ -528,7 +528,7 @@ huawei_get_temperature()
 #获取连接状态
 # $1:AT串口
 # $2:连接定义
-huawei_get_connect_status()
+tdtech_get_connect_status()
 {
     local at_port="$1"
     local define_connect="$2"
@@ -554,13 +554,13 @@ huawei_get_connect_status()
 }
 
 #基本信息
-huawei_base_info()
+tdtech_base_info()
 {
-    debug "Huawei base info"
+    debug "TDTech base info"
 
     #Name（名称）
     at_command="AT+CGMM"
-    name=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "+CGMM: " | awk -F': ' '{print $2}' | sed 's/\r//g')
+    name=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
     #Manufacturer（制造商）
     at_command="AT+CGMI"
     manufacturer=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
@@ -569,15 +569,15 @@ huawei_base_info()
     revision=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | sed -n '2p' | sed 's/\r//g')
 
     #Mode（拨号模式）
-    mode=$(huawei_get_mode ${at_port} ${platform} | tr 'a-z' 'A-Z')
+    mode=$(tdtech_get_mode ${at_port} ${platform} | tr 'a-z' 'A-Z')
 
     #Temperature（温度）
-    temperature=$(huawei_get_temperature ${at_port})
+    temperature=$(tdtech_get_temperature ${at_port})
 }
 
 #获取SIM卡状态
 # $1:SIM卡状态标志
-huawei_get_sim_status()
+tdtech_get_sim_status()
 {
     local sim_status
     case $1 in
@@ -605,9 +605,9 @@ huawei_get_sim_status()
 }
 
 #SIM卡信息
-huawei_sim_info()
+tdtech_sim_info()
 {
-    debug "Huawei sim info"
+    debug "TDTech sim info"
     
     #SIM Slot（SIM卡卡槽）
     # at_command="AT^SIMSLOT?"
@@ -627,7 +627,7 @@ huawei_sim_info()
     #SIM Status（SIM状态）
     at_command="AT+CPIN?"
 	sim_status_flag=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+CPIN: ")
-    sim_status=$(huawei_get_sim_status "$sim_status_flag")
+    sim_status=$(tdtech_get_sim_status "$sim_status_flag")
 
     if [ "$sim_status" != "ready" ]; then
         return
@@ -662,7 +662,7 @@ huawei_sim_info()
 
 #获取网络类型
 # $1:网络类型数字
-huawei_get_rat()
+tdtech_get_rat()
 {
     local rat
     case $1 in
@@ -676,7 +676,7 @@ huawei_get_rat()
 
 #获取信号强度指示（4G）
 # $1:信号强度指示数字
-huawei_get_rssi()
+tdtech_get_rssi()
 {
     local rssi
     case $1 in
@@ -687,12 +687,12 @@ huawei_get_rssi()
 }
 
 #网络信息
-huawei_network_info()
+tdtech_network_info()
 {
-    debug "Huawei network info"
+    debug "TDTech network info"
 
     #Connect Status（连接状态）
-    connect_status=$(huawei_get_connect_status ${at_port} ${define_connect})
+    connect_status=$(tdtech_get_connect_status ${at_port} ${define_connect})
     if [ "$connect_status" != "connect" ]; then
         return
     fi
@@ -704,7 +704,7 @@ huawei_network_info()
     [ -z "$network_type" ] && {
         at_command='AT+COPS?'
         local rat_num=$(sh ${SCRIPT_DIR}/modem_at.sh ${at_port} ${at_command} | grep "+COPS:" | awk -F',' '{print $4}' | sed 's/\r//g')
-        network_type=$(huawei_get_rat ${rat_num})
+        network_type=$(tdtech_get_rat ${rat_num})
     }
 
     #设置网络类型为5G时，信号强度指示用RSRP代替
@@ -717,7 +717,7 @@ huawei_network_info()
 
     #RSSI（4G信号强度指示）
     # rssi_num=$(echo $response | awk -F',' '{print $1}')
-    # rssi=$(huawei_get_rssi $rssi_num)
+    # rssi=$(tdtech_get_rssi $rssi_num)
     #BER（4G信道误码率）
     # ber=$(echo $response | awk -F',' '{print $2}')
 
@@ -757,7 +757,7 @@ huawei_network_info()
 
 #获取NR子载波间隔
 # $1:NR子载波间隔数字
-huawei_get_scs()
+tdtech_get_scs()
 {
     local scs
 	case $1 in
@@ -774,7 +774,7 @@ huawei_get_scs()
 #获取频段
 # $1:网络类型
 # $2:频段数字
-huawei_get_band()
+tdtech_get_band()
 {
     local band
     case $1 in
@@ -794,9 +794,9 @@ huawei_get_band()
 }
 
 #小区信息
-huawei_cell_info()
+tdtech_cell_info()
 {
-    debug "Huawei cell info"
+    debug "TDTech cell info"
 
     at_command="AT^MONSC"
     response=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "\^MONSC:" | sed 's/\^MONSC: //')
@@ -810,7 +810,7 @@ huawei_cell_info()
             nr_mnc=$(echo "$response" | awk -F',' '{print $3}')
             nr_arfcn=$(echo "$response" | awk -F',' '{print $4}')
             nr_scs_num=$(echo "$response" | awk -F',' '{print $5}')
-            nr_scs=$(huawei_get_scs ${nr_scs_num})
+            nr_scs=$(tdtech_get_scs ${nr_scs_num})
             nr_cell_id=$(echo "$response" | awk -F',' '{print $6}')
             nr_physical_cell_id=$(echo "$response" | awk -F',' '{print $7}')
             nr_tac=$(echo "$response" | awk -F',' '{print $8}')
@@ -835,7 +835,7 @@ huawei_cell_info()
             endc_nr_mnc=$(echo "$response" | awk -F',' '{print $3}')
             endc_nr_arfcn=$(echo "$response" | awk -F',' '{print $4}')
             endc_nr_scs_num=$(echo "$response" | awk -F',' '{print $5}')
-            endc_nr_scs=$(huawei_get_scs ${nr_scs_num})
+            endc_nr_scs=$(tdtech_get_scs ${nr_scs_num})
             endc_nr_cell_id=$(echo "$response" | awk -F',' '{print $6}')
             endc_nr_physical_cell_id=$(echo "$response" | awk -F',' '{print $7}')
             endc_nr_tac=$(echo "$response" | awk -F',' '{print $8}')
@@ -874,7 +874,7 @@ huawei_cell_info()
             gsm_mcc=$(echo "$response" | awk -F',' '{print $2}')
             gsm_mnc=$(echo "$response" | awk -F',' '{print $3}')
             gsm_band_num=$(echo "$response" | awk -F',' '{print $4}')
-            gsm_band=$(huawei_get_band "GSM" ${gsm_band_num})
+            gsm_band=$(tdtech_get_band "GSM" ${gsm_band_num})
             gsm_arfcn=$(echo "$response" | awk -F',' '{print $5}')
             gsm_bsic=$(echo "$response" | awk -F',' '{print $6}')
             gsm_cell_id=$(echo "$response" | awk -F',' '{print $7}')
@@ -886,33 +886,33 @@ huawei_cell_info()
     esac
 }
 
-#获取华为模组信息
+#获取鼎桥模组信息
 # $1:AT串口
 # $2:平台
 # $3:连接定义
-get_huawei_info()
+get_tdtech_info()
 {
-    debug "get huawei info"
+    debug "get tdtech info"
     #设置AT串口
     at_port="$1"
     platform="$2"
     define_connect="$3"
 
     #基本信息
-    huawei_base_info
+    tdtech_base_info
 
 	#SIM卡信息
-    huawei_sim_info
+    tdtech_sim_info
     if [ "$sim_status" != "ready" ]; then
         return
     fi
 
     #网络信息
-    huawei_network_info
+    tdtech_network_info
     if [ "$connect_status" != "connect" ]; then
         return
     fi
 
     #小区信息
-    huawei_cell_info
+    tdtech_cell_info
 }

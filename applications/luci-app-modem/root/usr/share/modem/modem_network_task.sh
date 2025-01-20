@@ -126,6 +126,8 @@ ecm_dial()
         at_command="AT^NDISDUP=${define_connect},1"
     elif [ "$manufacturer" = "huawei" ]; then
         at_command="AT^NDISDUP=${define_connect},1"
+    elif [ "$manufacturer" = "tdtech" ]; then
+        at_command="AT^NDISDUP=${define_connect},1"
     else
         at_command='ATI'
     fi
