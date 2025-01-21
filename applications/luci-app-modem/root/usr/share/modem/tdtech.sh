@@ -727,22 +727,15 @@ tdtech_network_info()
     # fi
 
     #AMBR（最大比特率）
-    at_command="AT^DHCP?"
-    response=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "\^DHCP:" | sed 's/\^DHCP: //g' | sed 's/\r//g')
-    ambr_ul_tmp=$(echo "$response" | awk -F',' '{print $8}')
-    ambr_dl_tmp=$(echo "$response" | awk -F',' '{print $7}')
-
-    [ -z "$ambr_ul_tmp" ] && {
-        at_command="AT^DHCPV6?"
-        response=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "\^DHCPV6:" | sed 's/\^DHCPV6: //g' | sed 's/\r//g')
-        ambr_ul_tmp=$(echo "$response" | awk -F',' '{print $8}')
-        ambr_dl_tmp=$(echo "$response" | awk -F',' '{print $7}')
-    }
+    at_command="AT^DSAMBR=${define_connect}"
+    response=$(sh ${SCRIPT_DIR}/modem_at.sh $at_port $at_command | grep "\^DSAMBR:" | sed 's/\^DSAMBR: //g' | sed 's/\r//g')
+    ambr_ul_tmp=$(echo "$response" | awk -F',' '{print $2}')
+    ambr_dl_tmp=$(echo "$response" | awk -F',' '{print $3}')
 
     #AMBR UL（上行签约速率，单位，Mbps）
-    ambr_ul=$(awk "BEGIN{ printf \"%.2f\", $ambr_ul_tmp / 1000000 }" | sed 's/\.*0*$//')
+    ambr_ul=$(awk "BEGIN{ printf \"%.2f\", $ambr_ul_tmp / 1000 }" | sed 's/\.*0*$//')
     #AMBR DL（下行签约速率，单位，Mbps）
-    ambr_dl=$(awk "BEGIN{ printf \"%.2f\", $ambr_dl_tmp / 1000000 }" | sed 's/\.*0*$//')
+    ambr_dl=$(awk "BEGIN{ printf \"%.2f\", $ambr_dl_tmp / 1000 }" | sed 's/\.*0*$//')
 
     # #速率统计
     # at_command='AT^DSFLOWQRY'
