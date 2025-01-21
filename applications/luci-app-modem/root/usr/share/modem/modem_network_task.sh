@@ -206,6 +206,15 @@ modem_network_task()
     local interface_name="wwan_5g_${modem_no}"
     local interface_name_ipv6="wwan6_5g_${modem_no}"
 
+    #AT串口未获取到重新获取（解决模组还在识别中，就已经开始拨号的问题）
+    while [ -z "$manufacturer" ] || [ "$manufacturer" = "unknown" ]; do
+        at_port=$(uci -q get modem.modem${modem_no}.at_port)
+        manufacturer=$(uci -q get modem.modem${modem_no}.manufacturer)
+        platform=$(uci -q get modem.modem${modem_no}.platform)
+        define_connect=$(uci -q get modem.modem${modem_no}.define_connect)
+        sleep 1s
+    done
+
     #重载配置（解决AT命令发不出去的问题）
     # service modem reload
 
