@@ -103,6 +103,12 @@ msgstr "选择一个模组进行调试"
 msgid "Network Preferences"
 msgstr "网络偏好"
 
+msgid "Apply Network Prefer"
+msgstr "应用网络偏好"
+
+msgid "Apply Band Prefer"
+msgstr "应用频段偏好"
+
 msgid "2G Band Preferences"
 msgstr "2G 频段偏好"
 
