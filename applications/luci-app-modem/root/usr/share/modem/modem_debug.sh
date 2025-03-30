@@ -8,7 +8,6 @@ source "${SCRIPT_DIR}/quectel.sh"
 source "${SCRIPT_DIR}/fibocom.sh"
 source "${SCRIPT_DIR}/meig.sh"
 source "${SCRIPT_DIR}/huawei.sh"
-source "${SCRIPT_DIR}/tdtech.sh"
 # source "${SCRIPT_DIR}/simcom.sh"
 
 #调试开关
